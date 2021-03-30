@@ -1,0 +1,29 @@
+{
+  "name": "sandbox-demo",
+  "version": "1.0.0",
+  "description": "A scratch pad for trying out different things - this is not intended as official documentation and should not be taken as recommended or supported practices.",
+  "main": "index.js",
+  "dependencies": {
+    "@apollo/gateway": "^0.25.0",
+    "apollo-server": "^2.22.1",
+    "dotenv": "^8.2.0",
+    "graphql": "^15.5.0"
+  },
+  "devDependencies": {
+    "@apollo/rover": "0.0.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apollographql/sandbox-demo.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/apollographql/sandbox-demo/issues"
+  },
+  "homepage": "https://github.com/apollographql/sandbox-demo#readme"
+}

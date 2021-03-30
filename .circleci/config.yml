@@ -1,0 +1,81 @@
+version: 2.1
+
+parameters:
+  config-file:
+    type: string
+    default: "supergraph.yml"
+  config:
+    type: string
+    default: >
+      subgraphs: {
+        rick-and-morty: {
+          routing_url: 'https://rickandmortyapi.com/graphql',
+          schema: { file: 'rickmorty.graphql' }
+        },
+        countries: {
+          routing_url: 'https://countries.trevorblades.com/',
+          schema: { file: 'countries.graphql'}
+        }
+
+      }
+
+commands:
+  bootstrap-build:
+    steps:
+      - run: ./boostrap.sh
+      # - run: rover graph fetch rickmorty@current > rickmorty.graphql
+      # - run: rover graph fetch countries1@current > countries.graphql
+      # - run: |
+      #     echo "<< pipeline.parameters.config >>" > << pipeline.parameters.config-file >>
+
+jobs:
+  build:
+    executor: rover/default
+    steps:
+      - checkout
+      - run: docker -v
+      - rover/install
+      - run: rover --version
+      - bootstrap-build
+      - rover/build:
+          path: << pipeline.parameters.config-file >>
+      - run: rover subgraph push funkyfederation --routing-url https://rickandmortyapi.com/graphql --schema rickmorty.graphql --name rickmorty
+      - run: rover subgraph push funkyfederation --routing-url https://countries.trevorblades.com/ --schema rickmorty.graphql --name rickmorty
+
+orbs:
+  rover:
+    executors:
+      default:
+        parameters:
+          image-name:
+            type: string
+            default: "cimg/node"
+          image-tag:
+            type: string
+            default: "15.11.0"
+        docker:
+          - image: << parameters.image-name>>:<< parameters.image-tag >>
+    commands:
+      install:
+        parameters:
+          version:
+            type: string
+            default: "v0.0.4"
+        steps:
+          ## TODO: don't install if we already have this version installed, unless a force parameter is true
+          - run: curl -sSL https://raw.githubusercontent.com/apollographql/rover/<< parameters.version >>/installers/binstall/scripts/nix/install.sh | sh
+          - run: echo 'export PATH=$HOME/.rover/bin:$PATH' >> $BASH_ENV
+      build:
+        parameters:
+          path:
+            type: string
+        steps:
+          - run: rover core build --config << parameters.path >>
+    
+workflows:
+  mine:
+    jobs:
+      - build
+
+
+
